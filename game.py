@@ -1,46 +1,49 @@
-
+#!/Library/Frameworks/Python.framework/Versions/3.7/bin/python3
 import cmd
 import textwrap
 import sys
 import os
 import time
 import random
-
-screen_width = 300
-
+import emoji
+from termcolor import colored
+print('version', sys.version)
+screen_width = 500
 ###Player Setup###
 class player:
     def __init__(self):
-        self.name = ""
-        self.hp = 0
-        self.mp = 0
+        self.name = ''
+        self.hp = 000
+        self.mp = 000
+        self.type = ''
+        self.location = 'D4'
 myplayer = player()
 
 ###Title Screens###
 def title_screen_selections():
-    option = input("> ")
-    if option.lower() == ("play"):
-        start_game()
-    elif option.lower() == ("help"):
+    option = raw_input("> ")
+    if option.lower() == ('play'):
+        setup_game()
+    elif option.lower() == ('help'):
         help_screen()
-    elif option.lower() == ("back"):
+    elif option.lower() == ('back'):
         title_screen()
-    elif option.lower() == ("quit"):
+    elif option.lower() == ('quit'):
         sys.exit()
-    while option.lower() not in ['play', 'help', 'quit']:
+    while option.lower() not in ['play', 'help', 'back', 'quit']:
         print("invalded command")
-        option = input("> ")
-        if option.lower() == ("play"):
-            start_game()
-        elif option.lower() == ("help"):
+        option = raw_input("> ")
+        if option.lower() == ('play'):
+            setup_game()
+        elif option.lower() == ('help'):
             help_screen()
-        elif option.lower() == ("back"):
+        elif option.lower() == ('back'):
             title_screen()
-        elif option.lower() == ("quit"):
+        elif option.lower() == ('quit'):
             sys.exit()
 
 def title_screen():
-    os.system('cls')
+    os.system('clear')
     print("#######################################")
     print("#               Welcome               #")
     print("#######################################")
@@ -51,17 +54,81 @@ def title_screen():
     title_screen_selections()
 
 def help_screen():
-    os.system('cls')
-    print("#Back##################################")
-    print("#       The best help I can give      #")
-    print("#       you is to play the game       #")
-    print("#           and to have fun           #")
-    print("#######################################")
+    os.system('clear')
+    print("#Back###################################")
+    print("#        The best help I can give      #")
+    print("#        you is to play the game       #")
+    print("#            and to have fun           #")
+    print("########################################")
     title_screen_selections()
 
-###program starts###
-title_screen()
+def setup_game():
+    os.system('clear')
+    print('########################################')
+    print('#         Well hello good sir.         #')
+    print('#          What is your name?          #')
+    print('########################################')
+    myplayer.name = raw_input("> ")
+    myplayer.hp = 100
+    myplayer.mp = 100
+    print_slow('########################################')
+    print_slow('#     Great now what class are you     #')
+    print_slow('#     Knight                           #')
+    print_slow('#     Mage                             #')
+    print_slow('########################################')
+    classType = raw_input("> ")
+    if classType.lower() == ('knight'):
+        myplayer.type = 'knight'
+        game_starts()
+    elif classType.lower() == ('mage'):
+        myplayer.type = 'mage'
+        game_starts()
+    while classType.lower() not in ['knight', 'mage']:
+        print('Not a class, select one.')
+        classType = raw_input("> ")
+        if classType.lower() == ('knight'):
+            myplayer.type = 'knight'
+            game_starts()
+        elif classType.lower() == ('mage'):
+            myplayer.type = 'mage'
+            game_starts()
 
+def game_starts():
+    os.system('clear')
+    print_game_status()
+
+###HELPER FUNCTIONS###
+def print_game_status():
+    os.system('clear')
+    print('#'),
+    print colored('HP%d' % myplayer.hp, 'red'),
+    print ('#####LOCATION' + '#'*19)
+    print('#'),
+    print colored('MP%d' % myplayer.mp, 'cyan'),
+    print ('########')
+    print colored(myplayer.location, 'green'),
+    print('#'*22)
+def print_slow(str):
+    for letter in str +'\n':
+        sys.stdout.write(letter)
+        sys.stdout.flush()
+        time.sleep(0.009)
+
+def print_location():
+    print(('#' * (4 + len(myplayer.location))))
+    print("# " + myplayer.location.upper() + ' #')
+    print(('#' * (4 + len(myplayer.location))))
+###GAME INTERACTIRTY###
+def prompt():
+    print('\n' + '########################################')
+    print('#           What do you do?            #')
+    print('#         Walk, Search, Quit.          #')
+    print('########################################')
+    action = raw_input('> ')
+    acceptable_actions = ['walk', 'search', 'quit']
+    while action.lower() not in acceptable_actions:
+        print('Unknow action, try again.\n')
+        action = input('> ')
 
 ###map###
 # a b c d e f g h
@@ -70,20 +137,20 @@ title_screen()
 #| | | | | | | | |3
 #| | | | | | | | |4
 
-ZONENAME: ''
-DESCRIPTION = ''
-EXAMINE = ''
-SOLVED = False
-UP = 'as'
-DOWN = 'asd'
-LEFT = 'as'
-RIGHT = 'as'
-
-
-solved_places = {
-
+#TODO: finsh sol
+solved_places = { 'a1': False, 'a2': False, 'a3': False, 'a4': False, 'b1': False,
+ 'b2': False, 'b3': False, 'b4': False, 'c1': False, 'c2': False, 'c3': False,
+ 'c4': False, 'd1': False, 'd2': False, 'd3': False, 'd4': False,
 }
 
+ZONENAME = ''
+DESCRIPTION = 'description'
+EXAMINE = 'examine'
+SOLVED = False
+UP = 'a1',
+DOWN = 'a1',
+LEFT = 'a1',
+RIGHT = 'a1',
 
 zonemap = {
     'a1': {
@@ -375,7 +442,7 @@ zonemap = {
         DOWN: '',
         LEFT: 'd4',
         RIGHT: 'f4',
-    },-
+    },
     'f4': {
         ZONENAME: "wineceller",
         DESCRIPTION: "you are in a wood room with wine bottles stored in the walls. There is a large red stain in the carpet leading out of the room.",
@@ -410,9 +477,5 @@ zonemap = {
 
 }
 
-
-
-
-
-
-
+###program starts###
+#title_screen()
