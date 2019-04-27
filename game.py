@@ -1,4 +1,4 @@
-#!/Library/Frameworks/Python.framework/Versions/3.7/bin/python3
+
 import cmd
 import textwrap
 import sys
@@ -6,8 +6,8 @@ import os
 import time
 import random
 import emoji
-from termcolor import colored
-print('version', sys.version)
+from termcolor import colored, cprint
+
 screen_width = 500
 ###Player Setup###
 class player:
@@ -16,7 +16,7 @@ class player:
         self.hp = 000
         self.mp = 000
         self.type = ''
-        self.location = 'D4'
+        self.location = 'a1'
 myplayer = player()
 
 ###Title Screens###
@@ -44,38 +44,44 @@ def title_screen_selections():
 
 def title_screen():
     os.system('clear')
-    print("#######################################")
-    print("#               Welcome               #")
-    print("#######################################")
-    print("#                -Play-               #")
-    print("#                -Help-               #")
-    print("#                -Quit-               #")
-    print("#######################################")
+    print("-----------------------------------------------------------")
+    print("-                         Welcome                         -")
+    print("-----------------------------------------------------------")
+    print("-                          -Play-                         -")
+    print("-                          -Help-                         -")
+    print("-                          -Quit-                         -")
+    print("-----------------------------------------------------------")
     title_screen_selections()
 
 def help_screen():
     os.system('clear')
-    print("#Back###################################")
-    print("#        The best help I can give      #")
-    print("#        you is to play the game       #")
-    print("#            and to have fun           #")
-    print("########################################")
+    print("-Back-------------------------------------------------------")
+    print("-                  The best help I can give                -")
+    print("-                  you is to play the game                 -")
+    print("-                      and to have fun                     -")
+    print("------------------------------------------------------------")
     title_screen_selections()
 
 def setup_game():
     os.system('clear')
-    print('########################################')
-    print('#         Well hello good sir.         #')
-    print('#          What is your name?          #')
-    print('########################################')
+    print_slow('------------------------------------------------------------')
+    print_slow('-                     Well hello there.                    -')
+    print_slow('-                    What is your name?                    -')
+    print_slow('------------------------------------------------------------')
     myplayer.name = raw_input("> ")
     myplayer.hp = 100
     myplayer.mp = 100
-    print_slow('########################################')
-    print_slow('#     Great now what class are you     #')
-    print_slow('#     Knight                           #')
-    print_slow('#     Mage                             #')
-    print_slow('########################################')
+    print_slow('-'*60)
+    print_slow('-            Great name, now choose your class?            -')
+    sys.stdout.write('-                         ')
+    sys.stdout.flush()
+    print colored('-Knight-', 'cyan'),
+    print_slow('                         -')
+    sys.stdout.write('-                          ')
+    sys.stdout.flush()
+    print colored('-Mage-', 'magenta'),
+    print_slow('                          -')
+    print_slow('-'*60)
     classType = raw_input("> ")
     if classType.lower() == ('knight'):
         myplayer.type = 'knight'
@@ -96,40 +102,99 @@ def setup_game():
 def game_starts():
     os.system('clear')
     print_game_status()
-
 ###HELPER FUNCTIONS###
 def print_game_status():
     os.system('clear')
-    print('#'),
-    print colored('HP%d' % myplayer.hp, 'red'),
-    print ('#####LOCATION' + '#'*19)
-    print('#'),
+    print('-'),
+    print colored('HP%d ' % myplayer.hp, 'red'),
+    sys.stdout.write('-')
+    sys.stdout.flush()
+    print colored('LOCATION', 'green', attrs=['underline']),
+    print_slow('-'*43)
+    print('-'),
     print colored('MP%d' % myplayer.mp, 'cyan'),
-    print ('########')
-    print colored(myplayer.location, 'green'),
-    print('#'*22)
+    print('---'),
+    print colored(myplayer.location.upper(), 'green'),
+    print_slow(' ' + '-'*45)
+    print('-'+' '*21),
+    print colored('Where are you?', attrs=['underline','bold']),
+    print(' '*21 + '-')
+    print_slow(zonemap[myplayer.location][DESCRIPTION])
+    prompt()
 def print_slow(str):
     for letter in str +'\n':
         sys.stdout.write(letter)
         sys.stdout.flush()
-        time.sleep(0.009)
-
+        time.sleep(0.001)
+def movementHandler(destanation):
+    print('You moved to ' + destanation + '.')
+    myplayer.location = destanation
+    print(myplayer.location)
 def print_location():
     print(('#' * (4 + len(myplayer.location))))
     print("# " + myplayer.location.upper() + ' #')
     print(('#' * (4 + len(myplayer.location))))
 ###GAME INTERACTIRTY###
 def prompt():
-    print('\n' + '########################################')
-    print('#           What do you do?            #')
-    print('#         Walk, Search, Quit.          #')
-    print('########################################')
+    print_slow('------------------------------------------------------------')
+    print('-                     '),
+    print colored('What do you do?', attrs=['underline', 'bold'] ),
+    print_slow('                     -')
+    sys.stdout.write('-  [1]')
+    sys.stdout.flush()
+    print colored('Walk', 'yellow'),
+    print_slow('                                                 -')
+    sys.stdout.write('-  [2]')
+    sys.stdout.flush()
+    print colored('Search', 'yellow'),
+    print_slow('                                               -')
+    sys.stdout.write('-  [3]')
+    sys.stdout.flush()
+    print colored('Inventory', 'yellow'),
+    print_slow('                                            -')
+    sys.stdout.write('-  [4]')
+    sys.stdout.flush()
+    print colored('Quit', 'yellow'),
+    print_slow('                                                 -')
+    print_slow('------------------------------------------------------------')
     action = raw_input('> ')
     acceptable_actions = ['walk', 'search', 'quit']
+    if action.lower() == 'walk':
+        player_move(action.lower())
+    elif action.lower() == 'search':
+        print('search')
+    elif action.lower() == 'quit':
+        print('quit')
     while action.lower() not in acceptable_actions:
         print('Unknow action, try again.\n')
-        action = input('> ')
+        action = raw_input('> ')
+        if action.lower() == 'walk':
+            player_move(action.lower())
+        elif action.lower() == 'search':
+            print('search')
+        elif action.lower() == 'quit':
+            print('quit')
 
+def player_move(myAction):
+    ask = 'Where do you '+myAction+'? Up, Down, Right, left.\n> '
+    dest = raw_input(ask)
+    if dest.lower() == 'up':
+        print(zonemap[myplayer.location][UP])
+        #print(movingTo)
+        #movementHandler(movingTo)
+    elif dest.lower() == 'down':
+        movingTo = zonemap[myplayer.location][DOWN]
+        print(movingTo)
+        movementHandler(movingTo)
+    elif dest.lower() == 'left':
+        movingTo = zonemap[myplayer.location][LEFT]
+        movementHandler(movingTo)
+    elif dest.lower() == 'right':
+        movingTo = zonemap[myplayer.location][RIGHT]
+        movementHandler(movingTo)
+    else:
+        print('invald command, try using up down left righrt.')
+        player_move(myAction)
 ###map###
 # a b c d e f g h
 #| | | | | | | | |1
@@ -137,7 +202,7 @@ def prompt():
 #| | | | | | | | |3
 #| | | | | | | | |4
 
-#TODO: finsh sol
+#TODO: finsh solved
 solved_places = { 'a1': False, 'a2': False, 'a3': False, 'a4': False, 'b1': False,
  'b2': False, 'b3': False, 'b4': False, 'c1': False, 'c2': False, 'c3': False,
  'c4': False, 'd1': False, 'd2': False, 'd3': False, 'd4': False,
@@ -147,10 +212,10 @@ ZONENAME = ''
 DESCRIPTION = 'description'
 EXAMINE = 'examine'
 SOLVED = False
-UP = 'a1',
-DOWN = 'a1',
-LEFT = 'a1',
-RIGHT = 'a1',
+UP = 'a1'
+DOWN = 'a1'
+LEFT = 'a1'
+RIGHT = 'a1'
 
 zonemap = {
     'a1': {
@@ -158,9 +223,9 @@ zonemap = {
         DESCRIPTION: 'fd',
         EXAMINE: 'afds',
         SOLVED: False,
-        UP: '',
+        UP: 'wrong',
         DOWN: 'a2',
-        LEFT: '',
+        LEFT: 'wrong',
         RIGHT: 'b1',
     },
     'b1': {
@@ -438,10 +503,10 @@ zonemap = {
         DESCRIPTION: "you are at the entrance to the castle with a door in front to the left and to the right of you",
         EXAMINE: "you see the door in front is locked",
         SOLVED: False,
-        UP: 'e3',
-        DOWN: '',
-        LEFT: 'd4',
-        RIGHT: 'f4',
+        UP: "3",
+        DOWN: "",
+        LEFT: "d4",
+        RIGHT: "f4",
     },
     'f4': {
         ZONENAME: "wineceller",
@@ -478,4 +543,4 @@ zonemap = {
 }
 
 ###program starts###
-#title_screen()
+title_screen()
