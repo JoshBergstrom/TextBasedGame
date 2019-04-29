@@ -60,6 +60,10 @@ def help_screen():
     print("-                      and to have fun                     -")
     print("------------------------------------------------------------")
     title_screen_selections()
+<<<<<<< HEAD
+=======
+
+>>>>>>> f8dbec0623c0d42b3021a8986c20a53a355ddb34
 def setup_game():
     os.system('clear')
     print_slow('------------------------------------------------------------')
@@ -96,6 +100,10 @@ def setup_game():
         elif classType.lower() == ('mage'):
             myplayer.type = 'mage'
             game_starts()
+<<<<<<< HEAD
+=======
+
+>>>>>>> f8dbec0623c0d42b3021a8986c20a53a355ddb34
 def game_starts():
     os.system('clear')
     main_game_loop()
@@ -170,6 +178,10 @@ def prompt():
             print(zonemap[myplayer.location][EXAMINE])
         elif action.lower() == 'quit':
             sys.exit()
+<<<<<<< HEAD
+=======
+
+>>>>>>> f8dbec0623c0d42b3021a8986c20a53a355ddb34
 def player_move(myAction):
     ask = 'Where do you move? Up, Down, Right, left.\n> '
     dest = raw_input(ask)
@@ -212,6 +224,11 @@ def player_move(myAction):
 #| | | | | | | | |2
 #| | | | | | | | |3
 #| | | | | | | | |4
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> f8dbec0623c0d42b3021a8986c20a53a355ddb34
 solved_places = { 'a1': False, 'a2': False, 'a3': False, 'a4': False, 'b1': False,
  'b2': False, 'b3': False, 'b4': False, 'c1': False, 'c2': False, 'c3': False,
  'c4': False, 'd1': False, 'd2': False, 'd3': False, 'd4': False, 'f1': False, 'f2': False, 'f3': False, 'f4':
