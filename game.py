@@ -16,7 +16,8 @@ class player:
         self.hp = 000
         self.mp = 000
         self.type = ''
-        self.location = 'a1'
+        self.location = 'e4'
+        self.gameOver = False
 myplayer = player()
 
 ###Title Screens###
@@ -101,10 +102,10 @@ def setup_game():
 
 def game_starts():
     os.system('clear')
-    print_game_status()
+    main_game_loop()
 ###HELPER FUNCTIONS###
 def print_game_status():
-    os.system('clear')
+    #os.system('clear')
     print('-'),
     print colored('HP%d ' % myplayer.hp, 'red'),
     sys.stdout.write('-')
@@ -120,7 +121,6 @@ def print_game_status():
     print colored('Where are you?', attrs=['underline','bold']),
     print(' '*21 + '-')
     print_slow(zonemap[myplayer.location][DESCRIPTION])
-    prompt()
 def print_slow(str):
     for letter in str +'\n':
         sys.stdout.write(letter)
@@ -129,13 +129,13 @@ def print_slow(str):
 def movementHandler(destanation):
     print('You moved to ' + destanation + '.')
     myplayer.location = destanation
-    print(myplayer.location)
 def print_location():
     print(('#' * (4 + len(myplayer.location))))
     print("# " + myplayer.location.upper() + ' #')
     print(('#' * (4 + len(myplayer.location))))
 ###GAME INTERACTIRTY###
 def prompt():
+    print_game_status()
     print_slow('------------------------------------------------------------')
     print('-                     '),
     print colored('What do you do?', attrs=['underline', 'bold'] ),
@@ -162,36 +162,52 @@ def prompt():
     if action.lower() == 'walk':
         player_move(action.lower())
     elif action.lower() == 'search':
-        print('search')
+        print(zonemap[myplayer.location][EXAMINE])
     elif action.lower() == 'quit':
-        print('quit')
+        sys.exit()
     while action.lower() not in acceptable_actions:
         print('Unknow action, try again.\n')
         action = raw_input('> ')
         if action.lower() == 'walk':
             player_move(action.lower())
         elif action.lower() == 'search':
-            print('search')
+            print(zonemap[myplayer.location][EXAMINE])
         elif action.lower() == 'quit':
-            print('quit')
+            sys.exit()
 
 def player_move(myAction):
-    ask = 'Where do you '+myAction+'? Up, Down, Right, left.\n> '
+    ask = 'Where do you move? Up, Down, Right, left.\n> '
     dest = raw_input(ask)
     if dest.lower() == 'up':
-        print(zonemap[myplayer.location][UP])
-        #print(movingTo)
-        #movementHandler(movingTo)
+        movingTo = zonemap[myplayer.location][UP]
+        if movingTo != '':
+            if myplayer.location == 'e4':
+                if zonemap[myplayer.location][SOLVED] == True:
+                    movementHandler(movingTo)
+                else:
+                    print('You do not have the key for this door.')
+            else:
+                movementHandler(movingTo)
+        else:
+            print('cant move that way')
     elif dest.lower() == 'down':
         movingTo = zonemap[myplayer.location][DOWN]
-        print(movingTo)
-        movementHandler(movingTo)
+        if movingTo != '':
+            movementHandler(movingTo)
+        else:
+            print('cant move that way')
     elif dest.lower() == 'left':
         movingTo = zonemap[myplayer.location][LEFT]
-        movementHandler(movingTo)
+        if movingTo != '':
+            movementHandler(movingTo)
+        else:
+            print('cant move that way')
     elif dest.lower() == 'right':
         movingTo = zonemap[myplayer.location][RIGHT]
-        movementHandler(movingTo)
+        if movingTo != '':
+            movementHandler(movingTo)
+        else:
+            print('cant move that way')
     else:
         print('invald command, try using up down left righrt.')
         player_move(myAction)
@@ -202,20 +218,21 @@ def player_move(myAction):
 #| | | | | | | | |3
 #| | | | | | | | |4
 
-#TODO: finsh solved
+
 solved_places = { 'a1': False, 'a2': False, 'a3': False, 'a4': False, 'b1': False,
  'b2': False, 'b3': False, 'b4': False, 'c1': False, 'c2': False, 'c3': False,
- 'c4': False, 'd1': False, 'd2': False, 'd3': False, 'd4': False,
+ 'c4': False, 'd1': False, 'd2': False, 'd3': False, 'd4': False, 'f1': False, 'f2': False, 'f3': False, 'f4':
+ False, 'g1': False, 'g2': False, 'g3': False, 'g4': False, 'h1': False, 'h2': False, 'h3': False, 'h4': False,
 }
 
 ZONENAME = ''
 DESCRIPTION = 'description'
 EXAMINE = 'examine'
 SOLVED = False
-UP = 'a1'
-DOWN = 'a1'
-LEFT = 'a1'
-RIGHT = 'a1'
+UP = 'up',
+DOWN = 'down',
+LEFT = 'left',
+RIGHT = 'right',
 
 zonemap = {
     'a1': {
@@ -223,9 +240,9 @@ zonemap = {
         DESCRIPTION: 'fd',
         EXAMINE: 'afds',
         SOLVED: False,
-        UP: 'wrong',
+        UP: '',
         DOWN: 'a2',
-        LEFT: 'wrong',
+        LEFT: '',
         RIGHT: 'b1',
     },
     'b1': {
@@ -503,7 +520,7 @@ zonemap = {
         DESCRIPTION: "you are at the entrance to the castle with a door in front to the left and to the right of you",
         EXAMINE: "you see the door in front is locked",
         SOLVED: False,
-        UP: "3",
+        UP: "e3",
         DOWN: "",
         LEFT: "d4",
         RIGHT: "f4",
@@ -543,4 +560,9 @@ zonemap = {
 }
 
 ###program starts###
+def main_game_loop():
+    while myplayer.gameOver is False:
+        #time.sleep(1.7)
+        prompt()
+
 title_screen()
