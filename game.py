@@ -18,7 +18,14 @@ class player:
         self.type = ''
         self.location = 'e4'
         self.gameOver = False
+        self.atk = 0
 myplayer = player()
+
+class enemy:
+    def __init__(self):
+        self.hp
+        self.atk
+        self.name
 
 ###Title Screens###
 def title_screen_selections():
@@ -71,12 +78,10 @@ def setup_game():
     myplayer.mp = 100
     print_slow('-'*60)
     print_slow('-            Great name, now choose your class?            -')
-    sys.stdout.write('-                         ')
-    sys.stdout.flush()
+    print('-                        '),
     print colored('-Knight-', 'cyan'),
     print_slow('                         -')
-    sys.stdout.write('-                          ')
-    sys.stdout.flush()
+    print('-                         '),
     print colored('-Mage-', 'magenta'),
     print_slow('                          -')
     print_slow('-'*60)
@@ -124,6 +129,7 @@ def print_slow(str):
         time.sleep(0.001)
 def movementHandler(destanation):
     print('You moved to ' + destanation + '.')
+    time.sleep(0.5)
     myplayer.location = destanation
 def print_location():
     print(('#' * (4 + len(myplayer.location))))
@@ -154,11 +160,18 @@ def prompt():
     print_slow('                                                 -')
     print_slow('------------------------------------------------------------')
     action = raw_input('> ')
-    acceptable_actions = ['walk', 'search', 'quit']
+    acceptable_actions = ['walk', 'search', 'inventory', 'quit']
     if action.lower() == 'walk':
         player_move(action.lower())
     elif action.lower() == 'search':
         print(zonemap[myplayer.location][EXAMINE])
+        if zonemap[myplayer.location][ITEMNUMBER] != 'itemnumber':
+            time.sleep(0.5)
+            items[zonemap[myplayer.location][ITEMNUMBER]] = True
+        else:
+            return
+    elif action.lower() == 'inventory':
+        inventory()
     elif action.lower() == 'quit':
         sys.exit()
     while action.lower() not in acceptable_actions:
@@ -168,6 +181,8 @@ def prompt():
             player_move(action.lower())
         elif action.lower() == 'search':
             print(zonemap[myplayer.location][EXAMINE])
+        elif action.lower() == 'inventory':
+            inventory()
         elif action.lower() == 'quit':
             sys.exit()
 def player_move(myAction):
@@ -177,7 +192,7 @@ def player_move(myAction):
         movingTo = zonemap[myplayer.location][UP]
         if movingTo != '':
             if myplayer.location == 'e4':
-                if zonemap[myplayer.location][SOLVED] == True:
+                if items['item1'] == True:
                     movementHandler(movingTo)
                 else:
                     print('You do not have the key for this door.')
@@ -188,12 +203,22 @@ def player_move(myAction):
     elif dest.lower() == 'down':
         movingTo = zonemap[myplayer.location][DOWN]
         if movingTo != '':
+            if myplayer.location == 'e2':
+                if items['item1'] == True:
+                    movementHandler(moveingTo)
+                else:
+                    print('You dont have the key for this door.')
             movementHandler(movingTo)
         else:
             print('cant move that way')
     elif dest.lower() == 'left':
         movingTo = zonemap[myplayer.location][LEFT]
         if movingTo != '':
+            if myplayer.location == 'd3':
+                if items['item1'] == True:
+                    movementHandler(movingTo)
+                else:
+                    print('You dont have the key for this door.')
             movementHandler(movingTo)
         else:
             print('cant move that way')
@@ -206,6 +231,27 @@ def player_move(myAction):
     else:
         print('invald command, try using up down left righrt.')
         player_move(myAction)
+def inventory():
+    count = 0
+    count2 = 0
+    inventory_descriptions = {
+
+    }
+    for item_number in items:
+        if items[item_number] == True:
+            count += 1
+            item1 = player_inventory[item_number][ITEMNAME]
+            inventory_descriptions['item'+str(count)] = player_inventory[item_number][ITEMDESCRIPTION]
+            print('['+str(count)+']'+item1)
+    if count != 0:
+        print('Choose an item by its number to learn about it.')
+        chosen_item = raw_input('> ')
+        posible_items = [count]
+        for each_item in range(count):
+            count2+= 1
+            if chosen_item == str(count2):
+                print(inventory_descriptions['item'+chosen_item])
+                time.sleep(0.5)
 ###map###
 # a b c d e f g h
 #| | | | | | | | |1
@@ -223,6 +269,8 @@ ZONENAME = ''
 DESCRIPTION = 'description'
 EXAMINE = 'examine'
 SOLVED = False
+ENEMYPRESENT = False
+ITEMNUMBER = 'itemnumber'
 UP = 'up',
 DOWN = 'down',
 LEFT = 'left',
@@ -234,6 +282,8 @@ zonemap = {
         DESCRIPTION: 'fd',
         EXAMINE: 'afds',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: '',
         DOWN: 'a2',
         LEFT: '',
@@ -244,6 +294,8 @@ zonemap = {
         DESCRIPTION: 'adf',
         EXAMINE: 'adf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: '',
         DOWN: 'b2',
         LEFT: 'a1',
@@ -254,6 +306,8 @@ zonemap = {
         DESCRIPTION: 'ffd',
         EXAMINE: 'adfda',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: '',
         DOWN: 'c2',
         LEFT: 'b1',
@@ -264,6 +318,8 @@ zonemap = {
         DESCRIPTION: 'af',
         EXAMINE: 'dfa',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: '',
         DOWN: 'd2',
         LEFT: 'c1',
@@ -274,6 +330,8 @@ zonemap = {
         DESCRIPTION: 'afd',
         EXAMINE: 'adf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: '',
         DOWN: 'e2',
         LEFT: 'd1',
@@ -284,6 +342,8 @@ zonemap = {
         DESCRIPTION: 'adf',
         EXAMINE: 'adf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: '',
         DOWN: 'f2',
         LEFT: 'e1',
@@ -294,6 +354,8 @@ zonemap = {
         DESCRIPTION: 'adf',
         EXAMINE: 'adf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: '',
         DOWN: 'g2',
         LEFT: 'f1',
@@ -304,6 +366,8 @@ zonemap = {
         DESCRIPTION: 'adsf',
         EXAMINE: 'adsf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: '',
         DOWN: 'h2',
         LEFT: 'g1',
@@ -314,6 +378,8 @@ zonemap = {
         DESCRIPTION: 'fd',
         EXAMINE: 'dasf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'a1',
         DOWN: 'a3',
         LEFT: '',
@@ -324,6 +390,8 @@ zonemap = {
         DESCRIPTION: 'afds',
         EXAMINE: 'adf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'b1',
         DOWN: 'b3',
         LEFT: 'a2',
@@ -334,6 +402,8 @@ zonemap = {
         DESCRIPTION: 'dfs',
         EXAMINE: 'dfafds',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'c1',
         DOWN: 'c3',
         LEFT: 'b2',
@@ -344,6 +414,8 @@ zonemap = {
         DESCRIPTION: 'dfs',
         EXAMINE: 'fds',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'd1',
         DOWN: 'd3',
         LEFT: 'c2',
@@ -354,6 +426,8 @@ zonemap = {
         DESCRIPTION: 'dfa',
         EXAMINE: 'adf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'e1',
         DOWN: 'e3',
         LEFT: 'd2',
@@ -364,6 +438,8 @@ zonemap = {
         DESCRIPTION: 'fads',
         EXAMINE: 'afdf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'f1',
         DOWN: 'f3',
         LEFT: 'e2',
@@ -374,6 +450,8 @@ zonemap = {
         DESCRIPTION: 'afd',
         EXAMINE: 'afd',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'g1',
         DOWN: 'g3',
         LEFT: 'f2',
@@ -384,6 +462,8 @@ zonemap = {
         DESCRIPTION: 'fasd',
         EXAMINE: 'asf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'h1',
         DOWN: 'h3',
         LEFT: 'g2',
@@ -394,6 +474,8 @@ zonemap = {
         DESCRIPTION: 'afd',
         EXAMINE: 'adf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'a2',
         DOWN: 'a4',
         LEFT: '',
@@ -404,6 +486,8 @@ zonemap = {
         DESCRIPTION: 'afsd',
         EXAMINE: 'fasf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'b2',
         DOWN: 'b4',
         LEFT: 'a3',
@@ -414,6 +498,8 @@ zonemap = {
         DESCRIPTION: 'afsd',
         EXAMINE: 'adfas',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'c2',
         DOWN: 'c4',
         LEFT: 'b3',
@@ -424,6 +510,8 @@ zonemap = {
         DESCRIPTION: 'fadf',
         EXAMINE: 'adfa',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'd2',
         DOWN: 'd4',
         LEFT: 'c3',
@@ -434,6 +522,8 @@ zonemap = {
         DESCRIPTION: 'afda',
         EXAMINE: 'afsa',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'e2',
         DOWN: 'e4',
         LEFT: 'd3',
@@ -444,6 +534,8 @@ zonemap = {
         DESCRIPTION: 'afdsa',
         EXAMINE: 'fadsf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'f2',
         DOWN: 'f4',
         LEFT: 'e3',
@@ -454,6 +546,8 @@ zonemap = {
         DESCRIPTION: 'afasf',
         EXAMINE: 'afdsaf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'g2',
         DOWN: 'g4',
         LEFT: 'f3',
@@ -464,6 +558,8 @@ zonemap = {
         DESCRIPTION: 'afsdf',
         EXAMINE: 'adf',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'h2',
         DOWN: 'h4',
         LEFT: 'g3',
@@ -474,6 +570,8 @@ zonemap = {
         DESCRIPTION: 'afda',
         EXAMINE: 'afda',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'a3',
         DOWN: '',
         LEFT: '',
@@ -484,6 +582,8 @@ zonemap = {
         DESCRIPTION: 'fdsf',
         EXAMINE: 'afds',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'b3',
         DOWN: '',
         LEFT: 'a4',
@@ -494,6 +594,8 @@ zonemap = {
         DESCRIPTION: 'adfsa',
         EXAMINE: 'adfas',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'c3',
         DOWN: '',
         LEFT: 'b4',
@@ -504,6 +606,8 @@ zonemap = {
         DESCRIPTION: "you are in a room with a large round wood table in the center of the room, there are book shelf's on all the walls. There is also a skeleton in the corner with an iron sword in his hand",
         EXAMINE: "you find a spell book in one of the shelf's",
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'item2',
         UP: 'd3',
         DOWN: '',
         LEFT: 'c4',
@@ -514,6 +618,8 @@ zonemap = {
         DESCRIPTION: "you are at the entrance to the castle with a door in front to the left and to the right of you",
         EXAMINE: "you see the door in front is locked",
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: "e3",
         DOWN: "",
         LEFT: "d4",
@@ -524,6 +630,8 @@ zonemap = {
         DESCRIPTION: "you are in a wood room with wine bottles stored in the walls. There is a large red stain in the carpet leading out of the room.",
         EXAMINE: "dsaf",
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'f3',
         DOWN: '',
         LEFT: 'e4',
@@ -534,6 +642,8 @@ zonemap = {
         DESCRIPTION: 'dsfa',
         EXAMINE: 'adfa',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'g3',
         DOWN: '',
         LEFT: 'f4',
@@ -544,6 +654,8 @@ zonemap = {
         DESCRIPTION: 'dasff',
         EXAMINE: 'adfsa',
         SOLVED: False,
+        ENEMYPRESENT: False,
+        ITEMNUMBER: 'itemnumber',
         UP: 'h3',
         DOWN: '',
         LEFT: 'g4',
@@ -553,10 +665,53 @@ zonemap = {
 
 }
 
+ITEMNAME = ''
+ITEMDESCRIPTION = 'description'
+PLAYERHAS = False
+ISKEY = False
+ISWEAPON = False
+ISSPELL = False
+
+items = { 'item1': False, 'item2': False, 'item3': False, 'item4': False
+}
+
+player_inventory = {
+    'item1':{
+        ITEMNAME: 'KEY',
+        ITEMDESCRIPTION: 'Key to e4 door.',
+        PLAYERHAS: True,
+        ISKEY: True,
+        ISWEAPON: False,
+        ISSPELL: False,
+    },
+    'item2':{
+        ITEMNAME: 'Flamethrower Spell book',
+        ITEMDESCRIPTION: 'Spell book found in D4. Grants player flamethrower spell.',
+        PLAYERHAS: False,
+        ISKEY: False,
+        ISWEAPON: False,
+        ISSPELL: True,
+    },
+    'item3':{
+        ITEMNAME: 'Iron sword',
+        ITEMDESCRIPTION: 'An Iron sword. The classic weapon of all knights.',
+        PLAYERHAS: False,
+        ISKEY: False,
+        ISWEAPON: True,
+        ISSPELL: False,
+    },
+    'item4':{
+        ITEMNAME: 'Spark spell book',
+        ITEMDESCRIPTION: 'Spell book of the mage class. Grants player spark spell.',
+        PLAYERHAS: False,
+        ISKEY: False,
+        ISWEAPON: False,
+        ISSPELL: True,
+    }
+}
 ###program starts###
 def main_game_loop():
     while myplayer.gameOver is False:
-        #time.sleep(1.7)
         prompt()
 
 title_screen()
